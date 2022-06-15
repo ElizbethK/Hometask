@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/purchase")
@@ -51,32 +52,32 @@ public class PurchaseController {
     //UPDATE
     @ResponseStatus(code = HttpStatus.OK)
     @PutMapping("/update/{id}")
-    public ResponseEntity<UpdateResponse> update(@PathVariable(value = "id") int id, @RequestBody Purchase purchase){
-        if (purchaseService.findById(id) == null) {
-            new ResourceNotFoundException("Purchase with id " + id + " is not found");
-        } else
-            purchaseService.updateFull(id, purchase);
+    public ResponseEntity<UpdateResponse> update(@PathVariable(value = "id") int id, @RequestBody Purchase purchase) throws ResourceNotFoundException {
+        Optional<Purchase> optionalPurchase = Optional.ofNullable(purchaseService.findById(id));
+        optionalPurchase.orElseThrow(() ->
+                new ResourceNotFoundException("Purchase with id " + id + " is not found"));
+        purchaseService.updateFull(id, purchase);
         return ResponseEntity.ok(new UpdateResponse("Purchase with id " + id + " has been updated"));
     }
 
     @ResponseStatus(code = HttpStatus.OK)
     @PatchMapping("/update/{id}")
-    public ResponseEntity<UpdateResponse> patch(@PathVariable (value = "id") Integer id, @RequestBody Purchase purchase){
-        if (purchaseService.findById(id) == null) {
-            new ResourceNotFoundException("Purchase with id " + id + " is not found");
-        } else
-            purchaseService.updatePart(id, purchase);
+    public ResponseEntity<UpdateResponse> patch(@PathVariable (value = "id") Integer id, @RequestBody Purchase purchase) throws ResourceNotFoundException {
+        Optional<Purchase> optionalPurchase = Optional.ofNullable(purchaseService.findById(id));
+        optionalPurchase.orElseThrow(() ->
+                new ResourceNotFoundException("Purchase with id " + id + " is not found"));
+         purchaseService.updatePart(id, purchase);
         return ResponseEntity.ok(new UpdateResponse("Purchase with id " + id + " has been updated"));
     }
 
     //DELETE
     @ResponseStatus(code = HttpStatus.OK)
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<DeleteResponse> deleteById(@PathVariable(value = "id") int id){
-        if (purchaseService.findById(id) == null) {
-            new ResourceNotFoundException("Purchase with id " + id + " is not found");
-        } else
-            purchaseService.deleteById(id);
+    public ResponseEntity<DeleteResponse> deleteById(@PathVariable(value = "id") int id) throws ResourceNotFoundException {
+        Optional<Purchase> optionalPurchase = Optional.ofNullable(purchaseService.findById(id));
+        optionalPurchase.orElseThrow(() ->
+                new ResourceNotFoundException("Purchase with id " + id + " is not found"));
+        purchaseService.deleteById(id);
         return ResponseEntity.ok(new DeleteResponse("Purchase with id " + id + " has been deleted"));
     }
 

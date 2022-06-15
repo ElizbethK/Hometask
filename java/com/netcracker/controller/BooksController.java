@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/books")
@@ -47,31 +48,35 @@ public class BooksController {
     //UPDATE
     @ResponseStatus(code = HttpStatus.OK)
     @PutMapping("/update/{id}")
-    public void update(@PathVariable(value = "id") int id, @RequestBody Books books){
+    public ResponseEntity<UpdateResponse> update(@PathVariable(value = "id") int id, @RequestBody Books books) throws ResourceNotFoundException {
+        Optional<Books> optionalBooks = Optional.ofNullable(booksService.findById(id));
+        optionalBooks.orElseThrow(() ->
+                new ResourceNotFoundException("Book with id " + id + " is not found"));
         booksService.updateFull(id, books);
+        return  ResponseEntity.ok(new UpdateResponse("Book with id " + id + " has been updated"));
     }
 
 
     @ResponseStatus(code = HttpStatus.OK)
     @PatchMapping("/update/{id}")
-    public ResponseEntity<UpdateResponse> patch(@PathVariable (value = "id") int id, @RequestBody Books books){
-        if (booksService.findById(id) == null) {
-            new ResourceNotFoundException("Book with id " + id + " is not found");
-        } else
-            booksService.updatePart(id, books);
-        return ResponseEntity.ok(new UpdateResponse("Book with id " + id + " has been updated"));
+    public ResponseEntity<UpdateResponse> patch(@PathVariable (value = "id") int id, @RequestBody Books books) throws ResourceNotFoundException {
+        Optional<Books> optionalBooks = Optional.ofNullable(booksService.findById(id));
+        optionalBooks.orElseThrow(() ->
+                new ResourceNotFoundException("Book with id " + id + " is not found"));
+        booksService.updatePart(id, books);
+        return  ResponseEntity.ok(new UpdateResponse("Book with id " + id + " has been updated"));
     }
 
 
     //DELETE
     @ResponseStatus(code = HttpStatus.OK)
    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<DeleteResponse> deleteBookById(@PathVariable (value = "id") int id){
-       if (booksService.findById(id) == null) {
-           new ResourceNotFoundException("Book with id " + id + " is not found");
-       } else
+    public ResponseEntity<DeleteResponse> deleteBookById(@PathVariable (value = "id") int id) throws ResourceNotFoundException {
+        Optional<Books> optionalBooks = Optional.ofNullable(booksService.findById(id));
+        optionalBooks.orElseThrow(() ->
+                new ResourceNotFoundException("Book with id " + id + " is not found"));
         booksService.deleteById(id);
-        return ResponseEntity.ok(new DeleteResponse("Book with id " + id + " has been deleted"));
+        return  ResponseEntity.ok(new DeleteResponse("Book with id " + id + " has been deleted"));
     }
 
 

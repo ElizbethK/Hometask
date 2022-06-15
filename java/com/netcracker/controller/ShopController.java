@@ -1,5 +1,6 @@
 package com.netcracker.controller;
 
+import com.netcracker.entity.Purchase;
 import com.netcracker.entity.Shop;
 import com.netcracker.exception.ResourceNotFoundException;
 import com.netcracker.response.DeleteResponse;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -47,32 +49,32 @@ public class ShopController {
     //UPDATE
     @ResponseStatus(code = HttpStatus.OK)
     @PutMapping("/update/{id}")
-    public ResponseEntity<UpdateResponse> update(@PathVariable(value = "id") int id, @RequestBody Shop shop){
-        if (shopService.findById(id) == null) {
-            new ResourceNotFoundException("Shop with id " + id + " is not found");
-        } else
-            shopService.updateFull(id, shop);
-        return ResponseEntity.ok(new UpdateResponse("Shop with id " + id + " has been updated"));
+    public ResponseEntity<UpdateResponse> update(@PathVariable(value = "id") int id, @RequestBody Shop shop) throws ResourceNotFoundException {
+        Optional<Shop> optionalShop = Optional.ofNullable(shopService.findById(id));
+        optionalShop.orElseThrow(() ->
+                new ResourceNotFoundException("Shop with id " + id + " is not found"));
+        shopService.updateFull(id, shop);
+        return ResponseEntity.ok(new UpdateResponse("Purchase with id " + id + " has been updated"));
     }
 
     @ResponseStatus(code = HttpStatus.OK)
     @PatchMapping("/update/{id}")
-    public ResponseEntity<UpdateResponse> patch(@PathVariable (value = "id") Integer id, @RequestBody Shop shop){
-        if (shopService.findById(id) == null) {
-            new ResourceNotFoundException("Customer with id " + id + " is not found");
-        } else
-            shopService.updatePart(id, shop);
-        return ResponseEntity.ok(new UpdateResponse("Shop with id " + id + " has been updated"));
+    public ResponseEntity<UpdateResponse> patch(@PathVariable (value = "id") Integer id, @RequestBody Shop shop) throws ResourceNotFoundException {
+        Optional<Shop> optionalShop = Optional.ofNullable(shopService.findById(id));
+        optionalShop.orElseThrow(() ->
+                new ResourceNotFoundException("Shop with id " + id + " is not found"));
+        shopService.updatePart(id, shop);
+        return ResponseEntity.ok(new UpdateResponse("Purchase with id " + id + " has been updated"));
     }
 
     //DELETE
     @ResponseStatus(code = HttpStatus.OK)
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<DeleteResponse> deleteById(@PathVariable(value = "id") int id){
-        if (shopService.findById(id) == null) {
-            new ResourceNotFoundException("Shop with id " + id + " is not found");
-        } else
-            shopService.deleteById(id);
+    public ResponseEntity<DeleteResponse> deleteById(@PathVariable(value = "id") int id) throws ResourceNotFoundException {
+        Optional<Shop> optionalShop = Optional.ofNullable(shopService.findById(id));
+        optionalShop.orElseThrow(() ->
+                new ResourceNotFoundException("Shop with id " + id + " is not found"));
+        shopService.deleteById(id);
         return ResponseEntity.ok(new DeleteResponse("Shop with id " + id + " has been deleted"));
     }
 

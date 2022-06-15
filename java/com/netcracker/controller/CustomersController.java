@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/customers")
@@ -49,33 +50,33 @@ public class CustomersController {
     //UPDATE
     @ResponseStatus(code = HttpStatus.OK)
     @PutMapping("/update/{id}")
-    public ResponseEntity<UpdateResponse> update(@PathVariable(value = "id") int id, @RequestBody Customers customers){
-        if (customersService.findById(id) == null) {
-            new ResourceNotFoundException("Customer with id " + id + " is not found");
-        } else
-            customersService.updateFull(id, customers);
-        return ResponseEntity.ok(new UpdateResponse("Customer with id " + id + " has been updated"));
+    public ResponseEntity<UpdateResponse> update(@PathVariable(value = "id") int id, @RequestBody Customers customers) throws ResourceNotFoundException {
+        Optional<Customers> optionalCustomers = Optional.ofNullable(customersService.findById(id));
+        optionalCustomers.orElseThrow(() ->
+                new ResourceNotFoundException("Book with id " + id + " is not found"));
+        customersService.updateFull(id, customers);
+        return  ResponseEntity.ok(new UpdateResponse("Book with id " + id + " has been updated"));
     }
 
     @ResponseStatus(code = HttpStatus.OK)
     @PatchMapping("/update/{id}")
-    public ResponseEntity<UpdateResponse> patch(@PathVariable (value = "id") Integer id, @RequestBody Customers customers){
-        if (customersService.findById(id) == null) {
-            new ResourceNotFoundException("Customer with id " + id + " is not found");
-        } else
+    public ResponseEntity<UpdateResponse> patch(@PathVariable (value = "id") Integer id, @RequestBody Customers customers) throws ResourceNotFoundException {
+        Optional<Customers> optionalCustomers = Optional.ofNullable(customersService.findById(id));
+        optionalCustomers.orElseThrow(() ->
+                new ResourceNotFoundException("Book with id " + id + " is not found"));
             customersService.updatePart(id, customers);
-        return ResponseEntity.ok(new UpdateResponse("Customer with id " + id + " has been updated"));
+        return  ResponseEntity.ok(new UpdateResponse("Book with id " + id + " has been updated"));
     }
 
     //DELETE
     @ResponseStatus(code = HttpStatus.OK)
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<DeleteResponse> deleteById(@PathVariable(value = "id") int id){
-        if (customersService.findById(id) == null) {
-            new ResourceNotFoundException("Customer with id " + id + " is not found");
-        } else
+    public ResponseEntity<DeleteResponse> deleteById(@PathVariable(value = "id") int id) throws ResourceNotFoundException {
+        Optional<Customers> optionalCustomers = Optional.ofNullable(customersService.findById(id));
+        optionalCustomers.orElseThrow(() ->
+                new ResourceNotFoundException("Book with id " + id + " is not found"));
             customersService.deleteById(id);
-        return ResponseEntity.ok(new DeleteResponse("Customer with id " + id + " has been deleted"));
+        return  ResponseEntity.ok(new DeleteResponse("Customer with id " + id + " has been deleted"));
     }
 
 //-------------------------------------------//
